@@ -1,0 +1,23 @@
+{
+  "name": "react-tf-renderer",
+  "version": "0.1.0",
+  "main": "index.js",
+  "keywords": ["terraform", "react", "renderer"],
+  "author": "Dmytro Koval",
+  "license": "ISC",
+  "description": "React renderer for Terraform",
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir=dist",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-reconciler": "^0.29.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-reconciler": "^0.28.0",
+    "bun-types": "latest"
+  }
+}
