@@ -1,5 +1,3 @@
-// Advanced example showing variables, multiple instances, and outputs
-
 import React from 'react';
 import { 
   Terraform, 
@@ -7,8 +5,8 @@ import {
   Resource, 
   Variable, 
   Output,
-  render,
-} from '../src';
+  render
+} from '../../src';
 
 const AdvancedInfrastructure = () => (
   <Terraform>
@@ -56,4 +54,4 @@ const AdvancedInfrastructure = () => (
   </Terraform>
 );
 
-console.log(await render(<AdvancedInfrastructure />));
+export default AdvancedInfrastructure;

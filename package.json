@@ -1,23 +1,30 @@
 {
-  "name": "react-tf-renderer",
+  "name": "@dkkoval/react-tf",
   "version": "0.1.0",
-  "main": "index.js",
-  "keywords": ["terraform", "react", "renderer"],
+  "main": "dist/index.js",
+  "bin": {
+    "react-tf": "./dist/cli.js"
+  },
+  "keywords": ["terraform", "react", "renderer", "cli"],
   "author": "Dmytro Koval",
-  "license": "ISC",
-  "description": "React renderer for Terraform",
+  "license": "Apache-2.0",
+  "description": "React renderer for Terraform with CLI support",
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir=dist",
+    "build": "bun build ./src/index.ts ./src/cli.ts --outdir=dist --target=node",
     "test": "bun test"
   },
   "dependencies": {
+    "commander": "^13.0.0",
+    "glob": "^11.0.1",
     "react": "^18.2.0",
     "react-reconciler": "^0.29.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "bun": "1.1.45"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
     "@types/react-reconciler": "^0.28.0",
+    "@types/node": "^20.0.0",
     "bun-types": "latest"
   }
 }
