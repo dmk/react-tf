@@ -1,29 +1,40 @@
 # React Terraform Renderer
 
-This project was created as a simple exercise to explore building a React renderer and refresh my Terraform knowledge.
-It allows you to write Terraform configurations using React components, leveraging React's composition patterns and TypeScript's type safety.
+Write your Terraform configurations using React components, leveraging React's composition patterns and TypeScript's type safety.
 
 ## Installation
 
 ```bash
-bun add react-tf-renderer
+npm install -g @dkkoval/react-tf
 ```
 
-CLI is coming soon.
+## CLI Usage
 
-## Usage
-
-Check out the [examples](examples) directory. You can run them by running:
+The `react-tf` CLI tool can process individual files or directories:
 
 ```bash
-bun examples/basic.tsx
+# Process current directory
+react-tf
+
+# Process specific directory
+react-tf ./terraform
+
+# Process specific file
+react-tf ./terraform/main.tsx
+
+# Process multiple files
+react-tf ./terraform/main.tsx ./terraform/network.tsx
+
+# Mix files and directories
+react-tf ./terraform/main.tsx ./other-terraform
 ```
+
+## Library Usage
 
 Here's a basic example:
 
 ```tsx
-import React from 'react';
-import { Terraform, Provider, Resource, render } from 'react-tf-renderer';
+import { Terraform, Provider, Resource } from '@dkkoval/react-tf';
 
 const Infrastructure = () => (
   <Terraform>
@@ -44,8 +55,7 @@ const Infrastructure = () => (
   </Terraform>
 );
 
-// Renders to HCL
-console.log(await render(<Infrastructure />));
+export default Infrastructure;
 ```
 
 ## Examples

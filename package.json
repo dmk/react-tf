@@ -1,16 +1,25 @@
 {
   "name": "@dkkoval/react-tf",
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dmk/react-tf.git"
+  },
   "main": "dist/index.js",
   "bin": {
     "react-tf": "./dist/cli.js"
   },
+  "type": "module",
+  "files": [
+    "dist"
+  ],
   "keywords": ["terraform", "react", "renderer", "cli"],
   "author": "Dmytro Koval",
   "license": "Apache-2.0",
   "description": "React renderer for Terraform with CLI support",
   "scripts": {
     "build": "bun build ./src/index.ts ./src/cli.ts --outdir=dist --target=node",
+    "prepublishOnly": "bun run build",
     "test": "bun test"
   },
   "dependencies": {
