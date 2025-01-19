@@ -1,5 +1,14 @@
 import React from 'react';
-import { ProviderProps, ResourceProps, VariableProps, OutputProps } from './types';
+import { 
+  ProviderProps, 
+  ResourceProps, 
+  VariableProps, 
+  OutputProps,
+  ModuleProps,
+  DataProps,
+  LocalsProps,
+  BackendProps
+} from './types';
 
 export const Terraform = ({ children }: { children: React.ReactNode }) => {
   return <terraform>{children}</terraform>;
@@ -21,8 +30,28 @@ export const Output = React.forwardRef<any, OutputProps>((props, ref) => {
   return <output {...props} />;
 });
 
+export const Module = React.forwardRef<any, ModuleProps>((props, ref) => {
+  return <module {...props} />;
+});
+
+export const Data = React.forwardRef<any, DataProps>((props, ref) => {
+  return <data {...props} ref={ref} />;
+});
+
+export const Locals = React.forwardRef<any, LocalsProps>((props, ref) => {
+  return <locals {...props} />;
+});
+
+export const Backend = React.forwardRef<any, BackendProps>((props, ref) => {
+  return <backend {...props} />;
+});
+
 // Set display names for debugging
 Provider.displayName = 'Provider';
 Resource.displayName = 'Resource';
 Variable.displayName = 'Variable';
 Output.displayName = 'Output';
+Module.displayName = 'Module';
+Data.displayName = 'Data';
+Locals.displayName = 'Locals';
+Backend.displayName = 'Backend';

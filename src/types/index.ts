@@ -44,3 +44,36 @@ export interface OutputProps {
   sensitive?: boolean;
   depends_on?: string[];
 }
+
+// Module types
+export interface ModuleProps {
+  name: string;
+  source: string;
+  version?: string;
+  providers?: Record<string, string>;
+  variables?: Record<string, any>;
+  depends_on?: string[];
+  count?: number;
+  for_each?: string[] | Record<string, any>;
+}
+
+// Data source types
+export interface DataProps {
+  type: string;
+  name: string;
+  attributes: Record<string, any>;
+  depends_on?: string[];
+  count?: number;
+  for_each?: string[] | Record<string, any>;
+}
+
+// Locals types
+export interface LocalsProps {
+  values: Record<string, any>;
+}
+
+// Backend types
+export interface BackendProps {
+  type: string;
+  configuration: Record<string, any>;
+}

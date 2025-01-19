@@ -4,5 +4,9 @@ export {
   Provider, 
   Resource, 
   Variable, 
-  Output 
+  Output,
+  Module,
+  Data,
+  Locals,
+  Backend,
 } from './components';

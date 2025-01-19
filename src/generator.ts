@@ -2,15 +2,25 @@ import { TerraformNode } from './types';
 
 export class HCLGenerator {
   static generateNode(node: TerraformNode): string {
-    switch (node.type) {
-      case 'Provider':
+    switch (node.type.toLowerCase()) {
+      case 'provider':
         return this.generateProvider(node);
-      case 'Resource':
+      case 'resource':
         return this.generateResource(node);
-      case 'Variable':
+      case 'variable':
         return this.generateVariable(node);
-      case 'Output':
+      case 'output':
         return this.generateOutput(node);
+      case 'module':
+        return this.generateModule(node);
+      case 'data':
+        return this.generateData(node);
+      case 'locals':
+        return this.generateLocals(node);
+      case 'backend':
+        return this.generateBackend(node);
+      case 'terraform':
+        return ''; // Skip terraform wrapper node
       default:
         console.log('Unknown node type:', node.type);
         return '';
@@ -20,10 +30,20 @@ export class HCLGenerator {
   private static generateProvider(node: TerraformNode): string {
     const { name, configuration } = node.props;
     return `provider "${name}" {
-  ${Object.entries(configuration)
-    .map(([key, value]) => `  ${key} = ${JSON.stringify(value)}`)
+${Object.entries(configuration)
+    .map(([key, value]) => `  ${key} = ${this.formatValue(value)}`)
     .join('\n')}
 }`;
+  }
+
+  private static formatValue(value: any): string {
+    if (typeof value === 'object' && value !== null) {
+      return JSON.stringify(value);
+    }
+    if (typeof value === 'string' && value.startsWith('${') && value.endsWith('}')) {
+      return value.slice(2, -1);
+    }
+    return JSON.stringify(value);
   }
 
   private static generateResource(node: TerraformNode): string {
@@ -75,6 +95,61 @@ ${blocks.join('\n')}
 
     return `output "${name}" {
 ${blocks.join('\n')}
+}`;
+  }
+
+  private static generateModule(node: TerraformNode): string {
+    const { name, source, version, providers, variables, count, depends_on } = node.props;
+    const blocks = [`  source = ${JSON.stringify(source)}`];
+    
+    if (version) blocks.push(`  version = ${JSON.stringify(version)}`);
+    if (count !== undefined) blocks.push(`  count = ${count}`);
+    if (depends_on?.length) blocks.push(`  depends_on = ${JSON.stringify(depends_on)}`);
+    if (providers) {
+      Object.entries(providers).forEach(([key, value]) => {
+        blocks.push(`  providers = ${JSON.stringify({ [key]: value })}`);
+      });
+    }
+    if (variables) {
+      Object.entries(variables).forEach(([key, value]) => {
+        blocks.push(`  ${key} = ${JSON.stringify(value)}`);
+      });
+    }
+
+    return `module "${name}" {
+${blocks.join('\n')}
+}`;
+  }
+
+  private static generateData(node: TerraformNode): string {
+    const { type, name, attributes } = node.props;
+    if (Object.keys(attributes).length === 0) {
+      return `data "${type}" "${name}" {}`;
+    }
+    
+    const attributeBlocks = Object.entries(attributes)
+      .map(([key, value]) => `  ${key} = ${this.formatValue(value)}`);
+
+    return `data "${type}" "${name}" {
+${attributeBlocks.join('\n')}
+}`;
+  }
+
+  private static generateLocals(node: TerraformNode): string {
+    const { values } = node.props;
+    return `locals {
+${Object.entries(values)
+    .map(([key, value]) => `  ${key} = ${JSON.stringify(value)}`)
+    .join('\n')}
+}`;
+  }
+
+  private static generateBackend(node: TerraformNode): string {
+    const { type, configuration } = node.props;
+    return `backend "${type}" {
+${Object.entries(configuration)
+    .map(([key, value]) => `  ${key} = ${JSON.stringify(value)}`)
+    .join('\n')}
 }`;
   }
 }
