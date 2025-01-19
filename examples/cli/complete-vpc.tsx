@@ -10,7 +10,7 @@ import {
   Locals,
   Backend,
   render
-} from '../src';
+} from '../../src';
 
 // Reusable component for subnet configuration
 interface SubnetConfig {
@@ -276,6 +276,36 @@ const CompleteVPCInfrastructure = () => {
         attributes={{}}
       />
 
+      {/* Security Group Module */}
+      <Module
+        name="security_groups"
+        source="terraform-aws-modules/security-group/aws"
+        version="5.1.0"
+        variables={{
+          name: "complete-vpc-sg",
+          vpc_id: "${aws_vpc.main.id}",
+          ingress_rules: ["https-443-tcp", "http-80-tcp"],
+          ingress_cidr_blocks: ["0.0.0.0/0"],
+          egress_rules: ["all-all"],
+          tags: "${local.common_tags}"
+        }}
+      />
+
+      {/* Add another module example for VPC flow logs */}
+      <Module
+        name="flow_logs"
+        source="terraform-aws-modules/vpc/aws//modules/vpc-flow-logs"
+        version="5.5.0"
+        variables={{
+          vpc_id: "${aws_vpc.main.id}",
+          traffic_type: "ALL",
+          log_destination_type: "cloud-watch-logs",
+          create_flow_log_cloudwatch_log_group: true,
+          create_flow_log_cloudwatch_iam_role: true,
+          tags: "${local.common_tags}"
+        }}
+      />
+
       {/* Outputs */}
       <Output
         name="vpc_id"
@@ -300,8 +330,14 @@ const CompleteVPCInfrastructure = () => {
         ]}
         description="IDs of public subnets"
       />
+
+      <Output
+        name="security_group_id"
+        value="${module.security_groups.security_group_id}"
+        description="ID of the security group"
+      />
     </Terraform>
   );
 };
 
-console.log(await render(<CompleteVPCInfrastructure />));
+export default CompleteVPCInfrastructure;
