@@ -1,4 +1,4 @@
-import { TerraformNode } from './types';
+import { TerraformBlockConfig, TerraformNode } from './types';
 
 export class HCLGenerator {
   static generateNode(node: TerraformNode): string {
@@ -17,10 +17,8 @@ export class HCLGenerator {
         return this.generateData(node);
       case 'locals':
         return this.generateLocals(node);
-      case 'backend':
-        return this.generateBackend(node);
       case 'terraform':
-        return ''; // Skip terraform wrapper node
+        return this.generateTerraformBlock(node);
       default:
         console.log('Unknown node type:', node.type);
         return '';
@@ -28,6 +26,12 @@ export class HCLGenerator {
   }
 
   private static formatValue(value: any): string {
+    // Handle functions (blocks)
+    if (typeof value === 'function') {
+      const blockContent = value();
+      return this.generateBlock(blockContent);
+    }
+
     // Handle string interpolation
     if (typeof value === 'string' && value.startsWith('${') && value.endsWith('}')) {
       return value.slice(2, -1); // Remove ${ and }
@@ -59,32 +63,54 @@ ${Object.entries(value)
     return this.formatValue(value);
   }
 
+  private static generateBlock(value: any): string {
+    if (typeof value === 'object' && value !== null) {
+      return `{
+${Object.entries(value)
+        .map(([k, v]) => `    ${k} = ${this.formatValue(v)}`)
+        .join('\n')}
+  }`;
+    }
+    return this.formatValue(value);
+  }
+
   private static generateProvider(node: TerraformNode): string {
     const { name, configuration } = node.props;
     return `provider "${name}" {
 ${Object.entries(configuration)
-      .map(([key, value]) => `  ${key} = ${this.formatValue(value)}`)
+      .map(([key, value]) => {
+        // If it's a function (block), call it and format without the = sign
+        if (typeof value === 'function') {
+          return `  ${key} ${this.formatValue(value)}`;
+        }
+        return `  ${key} = ${this.formatValue(value)}`;
+      })
       .join('\n')}
 }`;
   }
 
   private static generateResource(node: TerraformNode): string {
-    const { type, name, attributes, count, depends_on } = node.props;
-    const blocks = [];
+    const { type, name, attributes = {}, ...meta } = node.props;
     
-    if (count !== undefined) {
-      blocks.push(`  count = ${count}`);
-    }
+    const formattedAttributes = Object.entries(attributes)
+      .map(([key, value]) => {
+        // If it's a function (block) or array of functions (multiple blocks)
+        if (typeof value === 'function') {
+          return `  ${key} ${this.formatValue(value)}`;
+        }
+        if (Array.isArray(value) && value.every(v => typeof v === 'function')) {
+          return `  ${key} ${value.map(fn => this.formatValue(fn)).join('\n  ')}`;
+        }
+        return `  ${key} = ${this.formatValue(value)}`;
+      })
+      .join('\n');
 
-    if (depends_on?.length) {
-      blocks.push(`  depends_on = ${JSON.stringify(depends_on)}`);
-    }
-    
-    const attributeBlocks = Object.entries(attributes)
-      .map(([key, value]) => `  ${key} = ${this.formatValue(value)}`);
+    const metaArgs = Object.entries(meta)
+      .map(([key, value]) => `  ${key} = ${this.formatValue(value)}`)
+      .join('\n');
 
     return `resource "${type}" "${name}" {
-${[...blocks, ...attributeBlocks].join('\n')}
+${[metaArgs, formattedAttributes].filter(Boolean).join('\n')}
 }`;
   }
 
@@ -159,12 +185,42 @@ ${blocks.join('\n')}
 }`;
   }
 
-  private static generateBackend(node: TerraformNode): string {
-    const { type, configuration } = node.props;
-    return `backend "${type}" {
-${Object.entries(configuration)
-      .map(([key, value]) => `  ${key} = ${this.formatValue(value)}`)
-      .join('\n')}
+  static generateTerraformBlock(node: TerraformNode): string {
+    const config = node.props as TerraformBlockConfig;
+    const blocks: string[] = [];
+
+    // Handle required version
+    if (config.required_version) {
+      blocks.push(`  required_version = ${this.formatValue(config.required_version)}`);
+    }
+
+    // Handle backend configuration
+    if (config.backend) {
+      blocks.push(`  backend "${config.backend.type}" {
+${Object.entries(config.backend.configuration)
+        .map(([key, value]) => `    ${key} = ${this.formatValue(value)}`)
+        .join('\n')}
+  }`);
+    }
+
+    // Handle required providers
+    if (config.required_providers) {
+      blocks.push(`  required_providers {
+${Object.entries(config.required_providers)
+        .map(([name, provider]) => `    ${name} = {
+      source = ${this.formatValue(provider.source)}${provider.version ? `\n      version = ${this.formatValue(provider.version)}` : ''}
+    }`)
+        .join('\n')}
+  }`);
+    }
+
+    // Handle experiments
+    if (config.experiments?.length) {
+      blocks.push(`  experiments = ${this.formatValue(config.experiments)}`);
+    }
+
+    return `terraform {
+${blocks.join('\n\n')}
 }`;
   }
 }

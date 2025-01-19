@@ -8,8 +8,6 @@ import {
   Module,
   Data,
   Locals,
-  Backend,
-  render
 } from '../../src';
 
 // Reusable component for subnet configuration
@@ -52,19 +50,27 @@ const CompleteVPCInfrastructure = () => {
   };
 
   return (
-    <Terraform>
-      {/* Backend configuration for state management */}
-      <Backend
-        type="s3"
-        configuration={{
-          bucket: "my-terraform-state",
-          key: "vpc/terraform.tfstate",
-          region: "us-west-2",
-          encrypt: true,
-          dynamodb_table: "terraform-locks"
-        }}
-      />
-
+    <Terraform
+      configuration={{
+        required_version: ">= 1.0.0",
+        required_providers: {
+          aws: {
+            source: "hashicorp/aws",
+            version: "~> 5.0"
+          }
+        },
+        backend: {
+          type: "s3",
+          configuration: {
+            bucket: "my-terraform-state",
+            key: "vpc/terraform.tfstate",
+            region: "us-west-2",
+            encrypt: true,
+            dynamodb_table: "terraform-locks"
+          }
+        }
+      }}
+    >
       {/* Provider configuration with assumed role */}
       <Provider
         name="aws"

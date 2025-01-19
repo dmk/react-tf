@@ -7,5 +7,15 @@ export {
   Module,
   Data,
   Locals,
-  Backend,
 } from './implementations';
+
+export type {
+  ProviderProps,
+  ResourceProps,
+  VariableProps,
+  OutputProps,
+  ModuleProps,
+  DataProps,
+  LocalsProps,
+  TerraformProps,
+} from './types';

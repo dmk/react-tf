@@ -5,10 +5,8 @@ import {
   Resource, 
   Variable, 
   Output,
-  Module,
   Data,
   Locals,
-  Backend,
   render
 } from '../src';
 
@@ -52,27 +50,35 @@ const CompleteVPCInfrastructure = () => {
   };
 
   return (
-    <Terraform>
-      {/* Backend configuration for state management */}
-      <Backend
-        type="s3"
-        configuration={{
-          bucket: "my-terraform-state",
-          key: "vpc/terraform.tfstate",
-          region: "us-west-2",
-          encrypt: true,
-          dynamodb_table: "terraform-locks"
-        }}
-      />
-
+    <Terraform
+      configuration={{
+        required_version: ">= 1.0.0",
+        required_providers: {
+          aws: {
+            source: "hashicorp/aws",
+            version: "~> 5.0"
+          }
+        },
+        backend: {
+          type: "s3",
+          configuration: {
+            bucket: "my-terraform-state",
+            key: "vpc/terraform.tfstate",
+            region: "us-west-2",
+            encrypt: true,
+            dynamodb_table: "terraform-locks"
+          }
+        }
+      }}
+    >
       {/* Provider configuration with assumed role */}
       <Provider
         name="aws"
         configuration={{
           region: "us-west-2",
-          assume_role: {
+          assume_role: () => ({
             role_arn: "arn:aws:iam::123456789012:role/terraform"
-          }
+          })
         }}
       />
 
@@ -188,7 +194,18 @@ const CompleteVPCInfrastructure = () => {
           route: [
             {
               cidr_block: "0.0.0.0/0",
-              gateway_id: "${aws_internet_gateway.main.id}"
+              gateway_id: "${aws_internet_gateway.main.id}",
+              carrier_gateway_id: null,
+              core_network_arn: null,
+              destination_prefix_list_id: null,
+              egress_only_gateway_id: null,
+              ipv6_cidr_block: null,
+              local_gateway_id: null,
+              nat_gateway_id: null,
+              network_interface_id: null,
+              transit_gateway_id: null,
+              vpc_endpoint_id: null,
+              vpc_peering_connection_id: null
             }
           ],
           tags: {
@@ -206,7 +223,18 @@ const CompleteVPCInfrastructure = () => {
           route: [
             {
               cidr_block: "0.0.0.0/0",
-              nat_gateway_id: "${aws_nat_gateway.main.id}"
+              nat_gateway_id: "${aws_nat_gateway.main.id}",
+              carrier_gateway_id: null,
+              core_network_arn: null,
+              destination_prefix_list_id: null,
+              egress_only_gateway_id: null,
+              gateway_id: null,
+              ipv6_cidr_block: null,
+              local_gateway_id: null,
+              network_interface_id: null,
+              transit_gateway_id: null,
+              vpc_endpoint_id: null,
+              vpc_peering_connection_id: null
             }
           ],
           tags: {

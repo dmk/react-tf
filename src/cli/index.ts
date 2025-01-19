@@ -6,7 +6,7 @@ program
   .name('react-tf')
   .description('React Terraform renderer CLI')
   .version('0.2.2')
-  .argument('[dir]', 'Directory containing Terraform JSX/TSX files', '.')
+  .argument('[paths...]', 'Directory or specific JSX/TSX files to process', ['.'])
   .action(processFiles);
 
 program.parse();

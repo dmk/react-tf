@@ -66,8 +66,21 @@ export interface LocalsProps {
   values: Record<string, any>;
 }
 
-// Backend types
-export interface BackendProps {
-  type: string;
-  configuration: Record<string, any>;
+export interface TerraformBlockProps {
+  backend?: {
+    type: string;
+    configuration: Record<string, any>;
+  };
+  required_version?: string;
+  required_providers?: Record<string, {
+    source: string;
+    version?: string;
+  }>;
+  experiments?: string[];
+}
+
+// Update the Terraform component props
+export interface TerraformProps {
+  children: React.ReactNode;
+  configuration?: TerraformBlockProps;
 }

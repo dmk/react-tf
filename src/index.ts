@@ -8,7 +8,6 @@ export {
   Module,
   Data,
   Locals,
-  Backend,
   // Types
   type ProviderProps,
   type ResourceProps,
@@ -17,7 +16,7 @@ export {
   type ModuleProps,
   type DataProps,
   type LocalsProps,
-  type BackendProps,
+  type TerraformProps,
 } from './components';
 
 export { render } from './renderer';

@@ -6,7 +6,17 @@ import { Terraform, Provider, Resource, Variable, Output } from '@/components';
 describe('Integration Tests', () => {
   test('renders a complete infrastructure', async () => {
     const result = await render(
-      <Terraform>
+      <Terraform
+        configuration={{
+          required_version: ">= 1.0.0",
+          required_providers: {
+            aws: {
+              source: "hashicorp/aws",
+              version: "~> 5.0"
+            }
+          }
+        }}
+      >
         <Provider 
           name="aws" 
           configuration={{
@@ -33,6 +43,9 @@ describe('Integration Tests', () => {
       </Terraform>
     );
 
+    expect(result).toContain('terraform {');
+    expect(result).toContain('required_version = ">= 1.0.0"');
+    expect(result).toContain('required_providers {');
     expect(result).toContain('provider "aws"');
     expect(result).toContain('variable "instance_type"');
     expect(result).toContain('resource "aws_instance" "example"');

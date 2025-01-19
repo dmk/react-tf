@@ -32,7 +32,14 @@ function processNodes(nodes: TerraformNode[]): string {
   return nodes
     .map(node => {
       if (node.type === 'terraform') {
-        return processNodes(node.children as TerraformNode[]);
+        const terraformBlock = HCLGenerator.generateTerraformBlock({
+          type: 'terraform',
+          props: node.props.configuration || {},
+          children: []
+        });
+          
+        const childrenBlocks = processNodes(node.children as TerraformNode[]);
+        return [terraformBlock, childrenBlocks].filter(Boolean).join('\n\n');
       }
       return HCLGenerator.generateNode(node);
     })
