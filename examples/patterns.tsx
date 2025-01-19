@@ -92,7 +92,7 @@ const PracticalInfrastructure = () => {
   const isProd = process.env.TF_ENV === 'prod';
 
   return (
-    <Terraform>
+    <>
       <Provider 
         name="aws" 
         configuration={{
@@ -137,7 +137,7 @@ const PracticalInfrastructure = () => {
         value="${aws_vpc.main.id}"
         description="ID of the main VPC"
       />
-    </Terraform>
+    </>
   );
 };
 

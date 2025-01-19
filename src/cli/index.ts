@@ -7,6 +7,7 @@ program
   .description('React Terraform renderer CLI')
   .version('0.2.2')
   .argument('[paths...]', 'Directory or specific JSX/TSX files to process', ['.'])
+  .option('-o, --output <directory>', 'Output directory for generated Terraform files')
   .action(processFiles);
 
 program.parse();

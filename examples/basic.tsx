@@ -2,7 +2,7 @@ import React from 'react';
 import { Terraform, Provider, Resource, render } from '../src';
 
 const BasicInfrastructure = () => (
-  <Terraform>
+  <>
     <Provider
       name="aws"
       configuration={{
@@ -17,7 +17,7 @@ const BasicInfrastructure = () => (
         instance_type: "t2.micro"
       }}
     />
-  </Terraform>
+  </>
 );
 
 console.log(await render(<BasicInfrastructure />));

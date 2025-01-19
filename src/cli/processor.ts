@@ -1,8 +1,9 @@
 import { glob } from 'glob';
-import { join } from 'path';
+import { join, relative, dirname } from 'path';
 import { render } from '@/renderer';
+import { mkdir, writeFile } from 'fs/promises';
 
-export async function processFiles(paths: string[]) {
+export async function processFiles(paths: string[], options: { output?: string }) {
   try {
     let filesToProcess: string[] = [];
 
@@ -30,10 +31,26 @@ export async function processFiles(paths: string[]) {
       const module = await import(fullPath);
 
       if (module.default) {
-        console.log(`# Generated from: ${file}`);
         const result = await render(module.default());
-        console.log(result);
-        console.log('\n');
+        
+        if (options.output) {
+          // Get the relative path from the input directory
+          const inputDir = paths[0]; // Using the first path as base
+          const relPath = relative(inputDir, file);
+          const outPath = join(options.output, relPath.replace(/\.tsx?$/, '.tf'));
+          
+          // Ensure output directory exists
+          await mkdir(dirname(outPath), { recursive: true });
+          
+          // Write the file
+          await writeFile(outPath, result);
+          console.log(`Generated: ${outPath}`);
+        } else {
+          // Original stdout behavior
+          console.log(`# Generated from: ${file}`);
+          console.log(result);
+          console.log('\n');
+        }
       }
     }
   } catch (error) {
