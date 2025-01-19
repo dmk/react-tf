@@ -7,7 +7,7 @@
   },
   "main": "dist/index.js",
   "bin": {
-    "react-tf": "./dist/cli.js"
+    "react-tf": "./dist/cli/index.js"
   },
   "type": "module",
   "files": [
@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "description": "React renderer for Terraform with CLI support",
   "scripts": {
-    "build": "bun build ./src/index.ts ./src/cli.ts --outdir=dist --target=node",
+    "build": "bun build ./src/index.ts ./src/cli/index.ts --outdir=dist --target=node",
     "prepublishOnly": "bun run build",
     "test": "bun test"
   },

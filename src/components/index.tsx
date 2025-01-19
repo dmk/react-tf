@@ -1,18 +1,18 @@
 import React from 'react';
-import { 
-  ProviderProps, 
-  ResourceProps, 
-  VariableProps, 
+import type { 
+  ProviderProps,
+  ResourceProps,
+  VariableProps,
   OutputProps,
   ModuleProps,
   DataProps,
   LocalsProps,
-  BackendProps
+  BackendProps,
 } from './types';
 
-export const Terraform = ({ children }: { children: React.ReactNode }) => {
-  return <terraform>{children}</terraform>;
-};
+export function Terraform({ children }: { children: React.ReactNode }) {
+  return children;
+}
 
 export const Provider = React.forwardRef<any, ProviderProps>((props, ref) => {
   return <provider {...props} />;
@@ -55,3 +55,16 @@ Module.displayName = 'Module';
 Data.displayName = 'Data';
 Locals.displayName = 'Locals';
 Backend.displayName = 'Backend';
+
+// Re-export all types
+export type {
+  ProviderProps,
+  ProviderConfiguration,
+  ResourceProps,
+  VariableProps,
+  OutputProps,
+  ModuleProps,
+  DataProps,
+  LocalsProps,
+  BackendProps,
+} from './types';

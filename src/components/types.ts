@@ -1,9 +1,3 @@
-export interface TerraformNode {
-  type: string;
-  props: Record<string, any>;
-  children?: TerraformNode[];
-}
-
 // Provider types
 export interface ProviderConfiguration {
   region?: string;

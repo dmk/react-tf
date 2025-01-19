@@ -1,6 +1,6 @@
 import { expect, test, describe } from "bun:test";
 import React from 'react';
-import { render } from '@/render';
+import { render } from '@/renderer';
 import { Terraform, Resource } from '@/components';
 
 describe('Component Composition', () => {

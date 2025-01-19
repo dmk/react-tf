@@ -1,5 +1,5 @@
 import React from 'react';
-import { reconciler } from './renderer';
+import { reconciler } from './reconciler';
 import { TerraformNode } from './types';
 import { HCLGenerator } from './generator';
 
