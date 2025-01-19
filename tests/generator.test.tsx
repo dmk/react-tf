@@ -16,8 +16,8 @@ describe('HCL Generation', () => {
       />
     );
 
-    expect(result).toContain('instance_type = "${var.instance_type}"');
-    expect(result).toContain('subnet_id = "${aws_subnet.main.id}"');
+    expect(result).toContain('instance_type = var.instance_type');
+    expect(result).toContain('subnet_id = aws_subnet.main.id');
   });
 
   test('handles complex nested attributes', async () => {
@@ -39,9 +39,15 @@ describe('HCL Generation', () => {
     );
 
     expect(result).toContain('launch_template = {');
-    expect(result).toContain('"id": "${aws_launch_template.web.id}"');
-    expect(result).toContain('"version": "$Latest"');
-    expect(result).toContain('"propagate_at_launch": true');
+    expect(result).toContain('  id = aws_launch_template.web.id');
+    expect(result).toContain('  version = "$Latest"');
+    expect(result).toContain('tags = [');
+    expect(result).toContain('  {');
+    expect(result).toContain('    key = "Environment"');
+    expect(result).toContain('    value = "prod"');
+    expect(result).toContain('    propagate_at_launch = true');
+    expect(result).toContain('  }');
+    expect(result).toContain(']');
   });
 
   test('handles special meta-arguments', async () => {
@@ -49,15 +55,16 @@ describe('HCL Generation', () => {
       <Resource
         type="aws_instance"
         name="web"
+        count={3}
+        depends_on={["aws_vpc.main"]}
         attributes={{
           instance_type: "t2.micro"
         }}
-        count={3}
-        depends_on={["aws_vpc.main"]}
       />
     );
 
     expect(result).toContain('count = 3');
     expect(result).toContain('depends_on = ["aws_vpc.main"]');
+    expect(result).toContain('instance_type = "t2.micro"');
   });
 });

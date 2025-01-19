@@ -37,7 +37,7 @@ describe('Integration Tests', () => {
     expect(result).toContain('variable "instance_type"');
     expect(result).toContain('resource "aws_instance" "example"');
     expect(result).toContain('output "public_ip"');
-    expect(result).toContain('instance_type = "${var.instance_type}"');
+    expect(result).toContain('instance_type = var.instance_type');
   });
 
   test('handles conditional rendering', async () => {

@@ -61,7 +61,7 @@ describe('Basic Component Rendering', () => {
     );
 
     expect(result).toContain('output "instance_ip"');
-    expect(result).toContain('value = "${aws_instance.example.public_ip}"');
+    expect(result).toContain('value = aws_instance.example.public_ip');
     expect(result).toContain('description = "Public IP of the instance"');
   });
 }); 
